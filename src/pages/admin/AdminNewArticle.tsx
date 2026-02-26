@@ -37,6 +37,7 @@ const AdminNewArticle = () => {
   const [affiliateLinks, setAffiliateLinks] = useState("");
   const [imageLinks, setImageLinks] = useState("");
   const [featuredImage, setFeaturedImage] = useState("");
+  const [publishedAt, setPublishedAt] = useState(new Date().toISOString().split('T')[0]);
   const [reviewPrompt, setReviewPrompt] = useState("");
   const [includeProducts, setIncludeProducts] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -232,7 +233,7 @@ const AdminNewArticle = () => {
       category: category || "Geral",
       tags: tagsInput.split(',').map(tag => tag.trim()).filter(Boolean),
       author: settings.authorName,
-      publishedAt: new Date().toISOString().split('T')[0],
+      publishedAt: publishedAt,
       status: 'published' as const,
       type: articleType as any,
       wordCount: cleanText.split(/\s+/).filter(Boolean).length,
@@ -453,6 +454,18 @@ const AdminNewArticle = () => {
                   <SelectItem value="comparison">Comparativo</SelectItem>
                 </SelectContent>
               </Select>
+              <div>
+                <Label>Data de Publicação (Agendamento)</Label>
+                <Input
+                  type="date"
+                  value={publishedAt}
+                  onChange={e => setPublishedAt(e.target.value)}
+                  className="mt-1"
+                />
+                <p className="text-[10px] text-muted-foreground mt-1">
+                  Datas futuras não aparecerão no blog até o dia chegar.
+                </p>
+              </div>
             </div>
             <div className="md:col-span-2">
               <Label htmlFor="tags">Tags / Palavras-chave (separadas por vírgula)</Label>
@@ -631,39 +644,36 @@ const AdminNewArticle = () => {
               </div>
 
               {(articleType === 'review' || includeProducts) && (
-                <div>
-                  <Label htmlFor="reviewPrompt">Prompt / Formato do Review</Label>
-                  <Textarea
-                    id="reviewPrompt"
-                    value={reviewPrompt}
-                    onChange={e => setReviewPrompt(e.target.value)}
-                    placeholder="Descreva como o review deve ser estruturado. Ex: Incluir prós e contras, nota de 1 a 10, seção de especificações..."
-                    rows={4}
-                    className="mt-1"
-                  />
+                <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div>
+                    <Label htmlFor="reviewPrompt">Prompt / Formato do Review</Label>
+                    <div className="flex gap-2 items-start mt-1">
+                      <Textarea
+                        id="reviewPrompt"
+                        value={reviewPrompt}
+                        onChange={e => setReviewPrompt(e.target.value)}
+                        placeholder="Ex: Incluir prós e contras, nota de 1 a 10..."
+                        rows={3}
+                        className="flex-1"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="affiliateLinks">
+                      Produtos (nome, link de afiliado e imagem)
+                    </Label>
+                    <Textarea
+                      id="affiliateLinks"
+                      value={affiliateLinks}
+                      onChange={e => setAffiliateLinks(e.target.value)}
+                      placeholder={"Furadeira Bosch GSB 13 RE\nhttps://amzn.to/xxxxxx\nhttps://m.media-amazon.com/images/furadeira.jpg\n\nSierra Dewalt DCD791\nhttps://amzn.to/yyyyyy\nhttps://m.media-amazon.com/images/sierra.jpg"}
+                      rows={8}
+                      className="mt-1 font-mono text-sm"
+                    />
+                  </div>
                 </div>
               )}
-
-              <div>
-                <Label htmlFor="affiliateLinks">
-                  Produtos (nome, link de afiliado e imagem)
-                </Label>
-                <Textarea
-                  id="affiliateLinks"
-                  value={affiliateLinks}
-                  onChange={e => setAffiliateLinks(e.target.value)}
-                  placeholder={"Furadeira Bosch GSB 13 RE\nhttps://amzn.to/xxxxxx\nhttps://m.media-amazon.com/images/furadeira.jpg\n\nSierra Dewalt DCD791\nhttps://amzn.to/yyyyyy\nhttps://m.media-amazon.com/images/sierra.jpg"}
-                  rows={10}
-                  className="mt-1 font-mono text-sm"
-                />
-                <div className="text-xs text-muted-foreground mt-2 space-y-1 bg-secondary/50 rounded-md p-3">
-                  <p className="font-semibold text-foreground">📦 Formato por produto (separe cada produto com uma linha em branco):</p>
-                  <p>Linha 1 → <strong>Nome do produto</strong></p>
-                  <p>Linha 2 → <strong>Link de afiliado</strong></p>
-                  <p>Linha 3 → <strong>Link da imagem</strong></p>
-                  <p className="text-muted-foreground pt-1">Adicione quantos produtos quiser. A IA vai manter a correspondência correta de cada um.</p>
-                </div>
-              </div>
 
               <div className="flex flex-wrap gap-3">
                 <Button onClick={handleGenerateWithAI} disabled={isGenerating}>

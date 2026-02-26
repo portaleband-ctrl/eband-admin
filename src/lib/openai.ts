@@ -55,7 +55,7 @@ export const generateArticleContent = async (options: GenerateOptions) => {
     <div class="introduction">[TEXTO DO LEAD]</div>
     ${(type === 'review' || includeProducts) ? `
     <div class="product-reviews">
-      [PARA CADA PRODUTO]:
+      [PARA CADA PRODUTO FORNECIDO]:
       <div class="product-card">
         <h2>Nome Exato do Produto</h2>
         <img src="[URL_IMAGEM_FORNECIDA]" alt="Nome do Produto" class="product-image">
@@ -69,11 +69,15 @@ export const generateArticleContent = async (options: GenerateOptions) => {
             </tr>
           </tbody>
         </table>
-        <div class="button-container"><a href="[LINK_AFILIADO_DO_PRODUTO]" class="btn-offer" target="_blank" rel="noopener">Pegar Desconto</a></div>
+        <div class="button-container"><a href="[LINK_AFILIADO_DO_PRODUTO]" class="btn-offer" target="_blank" rel="noopener">Ver Oferta</a></div>
       </div>
-    </div>` : ''}
-    <div class="faq-section"><h2>Dúvidas Frequentes</h2>[FAQ ITEMS]</div>
-    <div class="conclusion">[FECHAMENTO]</div>
+    </div>` : `
+    <div class="article-content">
+      [DESENVOLVIMENTO DO ARTIGO COM SUBTÍTULOS H2 E H3 SE NECESSÁRIO]
+      [USE PARÁGRAFOS CURTOS E DESTAQUES EM NEGRITO]
+    </div>`}
+    <div class="faq-section"><h2>Dúvidas Frequentes</h2>[FAQ ITEMS COM <span class="faq-question">]</div>
+    <div class="conclusion">[FECHAMENTO NATURAL]</div>
   </div>`;
 
     const affiliateLinksList = affiliateLinks?.trim().split('\n').filter(Boolean) || [];
