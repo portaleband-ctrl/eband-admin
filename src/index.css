@@ -1,0 +1,285 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Mercado Livre inspired palette */
+    --background: 0 0% 96%;
+    /* Fundo cinza-claro #F5F5F5 */
+    --foreground: 220 30% 15%;
+    /* Texto principal escuro */
+
+    --card: 0 0% 100%;
+    /* Cards brancos puros */
+    --card-foreground: 220 30% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 30% 15%;
+
+    --primary: 213 98% 59%;
+    /* Azul ML #3483FA */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 92%;
+    /* Cinza claro */
+    --secondary-foreground: 220 30% 15%;
+
+    --muted: 0 0% 92%;
+    --muted-foreground: 220 12% 46%;
+
+    --accent: 51 100% 50%;
+    /* Amarelo ML #FFE600 */
+    --accent-foreground: 220 50% 15%;
+
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 88%;
+    --input: 220 13% 88%;
+    --ring: 213 98% 59%;
+
+    --radius: 0.5rem;
+
+    /* Admin sidebar stays dark - untouched */
+    --sidebar-background: 220 40% 12%;
+    --sidebar-foreground: 210 20% 95%;
+    --sidebar-primary: 213 98% 59%;
+    --sidebar-primary-foreground: 210 20% 98%;
+    --sidebar-accent: 220 30% 18%;
+    --sidebar-accent-foreground: 210 20% 98%;
+    --sidebar-border: 220 30% 18%;
+    --sidebar-ring: 213 98% 59%;
+
+    --chart-1: 213 98% 59%;
+    --chart-2: 51 100% 50%;
+    --chart-3: 142 71% 45%;
+    --chart-4: 25 95% 53%;
+    --chart-5: 346 77% 50%;
+
+    --blog-card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --blog-card-shadow-hover: 0 4px 16px rgba(52, 131, 250, 0.15);
+    --admin-sidebar-width: 260px;
+  }
+
+  .dark {
+    --background: 220 15% 10%;
+    --foreground: 40 20% 92%;
+
+    --card: 220 15% 13%;
+    --card-foreground: 40 20% 92%;
+
+    --popover: 220 15% 13%;
+    --popover-foreground: 40 20% 92%;
+
+    --primary: 213 98% 59%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 12% 18%;
+    --secondary-foreground: 40 20% 92%;
+
+    --muted: 220 12% 18%;
+    --muted-foreground: 40 10% 55%;
+
+    --accent: 51 100% 50%;
+    --accent-foreground: 220 50% 15%;
+
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 12% 22%;
+    --input: 220 12% 22%;
+    --ring: 213 98% 59%;
+
+    --sidebar-background: 220 15% 8%;
+    --sidebar-foreground: 40 20% 85%;
+    --sidebar-primary: 213 98% 59%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 12% 15%;
+    --sidebar-accent-foreground: 40 20% 85%;
+    --sidebar-border: 220 12% 15%;
+    --sidebar-ring: 213 98% 59%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Montserrat', sans-serif;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Montserrat', sans-serif;
+    @apply tracking-tight font-bold;
+  }
+}
+
+@layer utilities {
+  .blog-container {
+    @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .prose-blog {
+    @apply max-w-none text-lg leading-relaxed;
+  }
+
+  .prose-blog h2,
+  .prose-blog h3 {
+    @apply text-foreground mt-8 mb-4;
+  }
+
+  .prose-blog p {
+    @apply text-foreground/85 mb-4;
+  }
+
+  .prose-blog a {
+    @apply text-accent no-underline;
+  }
+
+  .prose-blog a:hover {
+    @apply underline;
+  }
+
+  .prose-blog img {
+    @apply rounded-lg shadow-md;
+  }
+
+  .glass {
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  }
+
+  .glass-dark {
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+  }
+
+  .premium-gradient {
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+  }
+
+  .card-hover {
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .card-hover:hover {
+    box-shadow: 0 20px 50px -12px rgba(99, 102, 241, 0.2);
+    transform: translateY(-4px) scale(1.01);
+  }
+
+  .text-aura {
+    background: linear-gradient(to right, #3483FA, #2D3277);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .ml-badge {
+    background-color: #FFE600;
+    color: #2D3277;
+    font-weight: 800;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 11px;
+  }
+
+  /* Global Article Styles for Content from API/DB */
+  .ai-article-container h2 {
+    @apply text-2xl font-black mt-12 mb-6 text-foreground leading-tight;
+  }
+
+  .ai-article-container p {
+    @apply mb-6 text-muted-foreground leading-relaxed;
+  }
+
+  .ai-article-container b,
+  .ai-article-container strong {
+    @apply font-black text-foreground;
+  }
+
+  /* Universal "Pegar Desconto" Button Style - ML Blue */
+  .ai-article-container a.btn-offer,
+  .ai-article-container .btn-offer,
+  .ai-article-container a[href*="amzn.to"],
+  .ai-article-container a.btn-amazon,
+  .ai-article-container .ver-oferta-btn {
+    display: block !important;
+    width: fit-content !important;
+    margin: 16px auto !important;
+    background-color: #3483FA !important;
+    color: #fff !important;
+    padding: 14px 32px !important;
+    text-decoration: none !important;
+    border-radius: 4px !important;
+    font-weight: 700 !important;
+    font-size: 16px !important;
+    border: none !important;
+    cursor: pointer !important;
+    box-shadow: 0 2px 8px rgba(52, 131, 250, 0.35) !important;
+    transition: all 0.15s ease !important;
+    text-align: center !important;
+  }
+
+  .ai-article-container a.btn-offer:hover,
+  .ai-article-container .btn-offer:hover,
+  .ai-article-container a[href*="amzn.to"]:hover {
+    background-color: #2968C8 !important;
+    box-shadow: 0 4px 14px rgba(52, 131, 250, 0.45) !important;
+    transform: translateY(-1px) !important;
+  }
+
+  /* Standardizing Old and New Product Review Tables - More Vivid */
+  .ai-article-container table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+  }
+
+  .ai-article-container th {
+    background-color: #3483FA;
+    color: #fff;
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: none;
+  }
+
+  .ai-article-container td {
+    padding: 12px 16px;
+    font-size: 14px;
+    border-bottom: 1px solid #f0f0f0;
+    background-color: #fff;
+    vertical-align: top;
+  }
+
+  .ai-article-container tr:nth-child(even) td {
+    background-color: #f8faff;
+  }
+
+  .ai-article-container tr:last-child td {
+    border-bottom: none;
+  }
+}
