@@ -16,69 +16,78 @@ export const generateArticleContent = async (options: GenerateOptions) => {
 
     if (!apiKey) throw new Error("API Key é necessária");
 
-    const systemPrompt = `Você é um redator especializado em SEO técnico e escrita humana para blogs de alta performance.
-  Seu objetivo é criar artigos que soem naturais, simples e fáceis de entender, sem clichês típicos de IA.
+    const isReview = type === 'review' || includeProducts;
 
-  ADICIONE ESTE BLOCO <style> NO TOPO DO HTML (ESTILOS SEGUROS QUE NÃO AFETAM O RESTO DO SITE):
-  <style>
-    .ai-article-container { font-family: 'Inter', sans-serif; line-height: 1.8; color: #333; }
-    .ai-article-container h2, .ai-article-container h3 { color: #111; margin-top: 2rem; margin-bottom: 1rem; font-weight: 700; }
-    .ai-article-container p { margin-bottom: 1.5rem; }
-    .ai-article-container .product-card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem; margin-bottom: 2.5rem; background: #fff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-    .ai-article-container .product-card h2 { margin-top: 0; font-size: 1.6rem; border-bottom: 3px solid #FFD814; display: inline-block; padding-bottom: 4px; margin-bottom: 1.2rem; }
-    .ai-article-container .product-image { width: 100% !important; max-width: 500px !important; height: auto !important; border-radius: 8px; display: block; margin: 1.2rem auto; object-fit: contain; }
-    .ai-article-container table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; }
-    .ai-article-container th { background-color: #3483FA; color: #fff; padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; border: none; }
-    .ai-article-container td { padding: 12px 16px; font-size: 14px; border-bottom: 1px solid #f0f0f0; background-color: #fff; vertical-align: top; }
-    .ai-article-container tr:nth-child(even) td { background-color: #f8faff; }
-    .ai-article-container .pros-cell { color: #059669; }
-    .ai-article-container .cons-cell { color: #dc2626; }
-    .ai-article-container .button-container { text-align: center; margin: 1.5rem 0; }
-    .ai-article-container .btn-offer { display: block; width: fit-content; margin: 0 auto; background-color: #3483FA; color: #fff !important; padding: 14px 32px; text-decoration: none !important; border-radius: 4px; font-weight: 700; font-size: 1rem; border: none; box-shadow: 0 2px 8px rgba(52,131,250,0.35); transition: all 0.15s; }
-    .ai-article-container .btn-offer:hover { background-color: #2968C8; }
-    .ai-article-container .faq-section { background: #f9fafb; padding: 1.5rem; border-radius: 12px; margin: 2.5rem 0; border: 1px solid #eee; }
-    .ai-article-container .faq-question { font-weight: bold; color: #111; display: block; margin-bottom: 0.4rem; }
-  </style>
+    const systemPrompt = `Você é um redator especializado em SEO técnico e escrita humana para blogs de alta performance no Brasil.
+    Seu objetivo é criar artigos que soem naturais, simples e fáceis de entender, sem clichês típicos de IA.
 
-  REGRAS DE ESCRITA:
-  - NUNCA use frases como "Descubra os segredos", "Prepare-se para", "Neste artigo vamos explorar".
-  - Use um tom de conversa direto entre humanos (Linguagem Simples).
-  - Parágrafos curtos. Use negrito em termos importantes.
-  - IMPORTANTE: NÃO inclua a tag <h1> com o título dentro do conteúdo HTML.
+    ${isReview ? `
+    ADICIONE ESTE BLOCO <style> NO TOPO DO HTML (ESTILOS SEGUROS QUE NÃO AFETAM O RESTO DO SITE):
+    <style>
+      .ai-article-container { font-family: 'Inter', sans-serif; line-height: 1.8; color: #333; }
+      .ai-article-container h2, .ai-article-container h3 { color: #111; margin-top: 2rem; margin-bottom: 1rem; font-weight: 700; }
+      .ai-article-container p { margin-bottom: 1.5rem; }
+      .ai-article-container .product-card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem; margin-bottom: 2.5rem; background: #fff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+      .ai-article-container .product-card h2 { margin-top: 0; font-size: 1.6rem; border-bottom: 3px solid #FFD814; display: inline-block; padding-bottom: 4px; margin-bottom: 1.2rem; }
+      .ai-article-container .product-image { width: 100% !important; max-width: 500px !important; height: auto !important; border-radius: 8px; display: block; margin: 1.2rem auto; object-fit: contain; }
+      .ai-article-container table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; }
+      .ai-article-container th { background-color: #3483FA; color: #fff; padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; border: none; }
+      .ai-article-container td { padding: 12px 16px; font-size: 14px; border-bottom: 1px solid #f0f0f0; background-color: #fff; vertical-align: top; }
+      .ai-article-container tr:nth-child(even) td { background-color: #f8faff; }
+      .ai-article-container .pros-cell { color: #059669; }
+      .ai-article-container .cons-cell { color: #dc2626; }
+      .ai-article-container .button-container { text-align: center; margin: 1.5rem 0; }
+      .ai-article-container .btn-offer { display: block; width: fit-content; margin: 0 auto; background-color: #3483FA; color: #fff !important; padding: 14px 32px; text-decoration: none !important; border-radius: 4px; font-weight: 700; font-size: 1rem; border: none; box-shadow: 0 2px 8px rgba(52,131,250,0.35); transition: all 0.15s; }
+      .ai-article-container .btn-offer:hover { background-color: #2968C8; }
+      .ai-article-container .faq-section { background: #f9fafb; padding: 1.5rem; border-radius: 12px; margin: 2.5rem 0; border: 1px solid #eee; }
+      .ai-article-container .faq-question { font-weight: bold; color: #111; display: block; margin-bottom: 0.4rem; }
+    </style>
 
-  REGRAS DE PRODUTOS (EXTREMAMENTE CRÍTICO):
-  - Use EXATAMENTE o "Nome do Produto" e o "Link de Afiliado" fornecidos. NÃO invente nomes.
-  - Para cada produto, a tabela deve ter OBRIGATORIAMENTE pelo menos 3 Vantagens e 3 Desvantagens de forma clara.
+    REGRAS DE PRODUTOS:
+    - Use EXATAMENTE o "Nome do Produto" e o "Link de Afiliado" fornecidos.
+    - OBRIGATÓRIO: Crie uma tabela de Vantagens e Desvantagens para CADA produto.
+    ` : `
+    REGRAS DE ARTIGO INFORMATIVO (STANDARD):
+    - NÃO inclua tabelas de vantagens e desvantagens.
+    - NÃO inclua botões de compra ou links de afiliado no estilo de review de produto.
+    - Foque em uma narrativa fluida com parágrafos e subtítulos H2/H3.
+    `}
 
-  ESTRUTURA HTML (ENVOLVA EM <div class="ai-article-container">):
-  <div class="ai-article-container">
-    <div class="introduction">[TEXTO DO LEAD]</div>
-    ${(type === 'review' || includeProducts) ? `
-    <div class="product-reviews">
-      [PARA CADA PRODUTO FORNECIDO]:
-      <div class="product-card">
-        <h2>Nome Exato do Produto</h2>
-        <img src="[URL_IMAGEM_FORNECIDA]" alt="Nome do Produto" class="product-image">
-        <p>[ANÁLISE REALISTA]</p>
-        <table>
-          <thead><tr><th>Vantagens</th><th>Desvantagens</th></tr></thead>
-          <tbody>
-            <tr>
-              <td class="pros-cell"><ul><li>Vantagem 1</li><li>Vantagem 2</li><li>Vantagem 3</li></ul></td>
-              <td class="cons-cell"><ul><li>Desvantagem 1</li><li>Desvantagem 2</li><li>Desvantagem 3</li></ul></td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="button-container"><a href="[LINK_AFILIADO_DO_PRODUTO]" class="btn-offer" target="_blank" rel="noopener">Ver Oferta</a></div>
-      </div>
-    </div>` : `
-    <div class="article-content">
-      [DESENVOLVIMENTO DO ARTIGO COM SUBTÍTULOS H2 E H3 SE NECESSÁRIO]
-      [USE PARÁGRAFOS CURTOS E DESTAQUES EM NEGRITO]
-    </div>`}
-    <div class="faq-section"><h2>Dúvidas Frequentes</h2>[FAQ ITEMS COM <span class="faq-question">]</div>
-    <div class="conclusion">[FECHAMENTO NATURAL]</div>
-  </div>`;
+    REGRAS DE ESCRITA:
+    - NUNCA use clichês como "Descubra os segredos", "Prepare-se para".
+    - Use um tom de conversa direto entre humanos (Linguagem Simples).
+    - Parágrafos curtos. Use negrito em termos importantes.
+    - IMPORTANTE: NÃO inclua a tag <h1> com o título dentro do conteúdo HTML.
+
+    ESTRUTURA HTML (ENVOLVA EM <div class="ai-article-container">):
+    <div class="ai-article-container">
+      <div class="introduction">[TEXTO DO LEAD]</div>
+      ${isReview ? `
+      <div class="product-reviews">
+        [PARA CADA PRODUTO FORNECIDO]:
+        <div class="product-card">
+          <h2>Nome Exato do Produto</h2>
+          <img src="[URL_IMAGEM_FORNECIDA]" alt="Nome do Produto" class="product-image">
+          <p>[ANÁLISE REALISTA]</p>
+          <table>
+            <thead><tr><th>Vantagens</th><th>Desvantagens</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="pros-cell"><ul><li>Vantagem 1</li><li>Vantagem 2</li><li>Vantagem 3</li></ul></td>
+                <td class="cons-cell"><ul><li>Desvantagem 1</li><li>Desvantagem 2</li><li>Desvantagem 3</li></ul></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="button-container"><a href="[LINK_AFILIADO_DO_PRODUTO]" class="btn-offer" target="_blank" rel="noopener">Ver Oferta</a></div>
+        </div>
+      </div>` : `
+      <div class="article-content">
+        [DESENVOLVIMENTO DO ARTIGO COM SUBTÍTULOS H2 E H3 SE NECESSÁRIO]
+        [USE PARÁGRAFOS CURTOS E DESTAQUES EM NEGRITO]
+      </div>`}
+      <div class="faq-section"><h2>Dúvidas Frequentes</h2>[FAQ ITEMS COM <span class="faq-question">]</div>
+      <div class="conclusion">[FECHAMENTO NATURAL]</div>
+    </div>`;
 
     const affiliateLinksList = affiliateLinks?.trim().split('\n').filter(Boolean) || [];
     const imageLinksList = imageLinks?.trim().split('\n').filter(Boolean) || [];
