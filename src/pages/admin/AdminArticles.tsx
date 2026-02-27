@@ -142,9 +142,11 @@ const AdminArticles = () => {
                           <Globe className={`w-4 h-4 ${isIndexing[article.id] ? "animate-pulse" : ""}`} />
                         </Button>
                       )}
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <Edit className="w-4 h-4" />
-                      </Button>
+                      <Link to={`/admin/editar-artigo/${article.id}`}>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                      </Link>
                       <Button
                         variant="ghost"
                         size="icon"
