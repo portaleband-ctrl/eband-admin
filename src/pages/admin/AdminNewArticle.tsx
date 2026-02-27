@@ -235,11 +235,15 @@ const AdminNewArticle = () => {
       return;
     }
 
-    const normalizedTitle = title
+    const normalizedSlug = title
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
       .toLowerCase()
-      .trim();
+      .trim()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-+|-+$/g, "");
 
     const cleanText = content
       .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
@@ -263,10 +267,7 @@ const AdminNewArticle = () => {
     const newArticle = {
       id: id || "",
       title,
-      slug: normalizedTitle
-        .replace(/[^\w\s-]/g, "")
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-"),
+      slug: normalizedSlug,
       excerpt: cleanText.substring(0, 160) + (cleanText.length > 160 ? "..." : ""),
       content,
       featuredImage,
