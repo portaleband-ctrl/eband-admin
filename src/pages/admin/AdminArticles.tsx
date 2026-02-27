@@ -1,7 +1,7 @@
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Plus, Edit, Trash2, Globe } from "lucide-react";
+import { Plus, Edit, Trash2, Globe, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useArticles } from "@/hooks/useArticles";
 import { useSettings } from "@/hooks/useSettings";
@@ -131,16 +131,27 @@ const AdminArticles = () => {
                   <td className="py-3 px-4 text-right">
                     <div className="flex items-center justify-end gap-1">
                       {article.status === 'published' && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-blue-500 hover:bg-blue-50 hover:text-blue-600"
-                          title="Forçar Indexação no Google"
-                          onClick={() => handleIndexGoogle(article.id, article.slug)}
-                          disabled={isIndexing[article.id]}
-                        >
-                          <Globe className={`w-4 h-4 ${isIndexing[article.id] ? "animate-pulse" : ""}`} />
-                        </Button>
+                        <div className="flex gap-1">
+                          <a
+                            href={`${settings.siteUrl}/artigo/${article.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center h-8 w-8 text-green-600 hover:bg-green-50 rounded-md transition-colors"
+                            title="Visualizar Artigo no Site"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </a>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-blue-500 hover:bg-blue-50 hover:text-blue-600"
+                            title="Forçar Indexação no Google"
+                            onClick={() => handleIndexGoogle(article.id, article.slug)}
+                            disabled={isIndexing[article.id]}
+                          >
+                            <Globe className={`w-4 h-4 ${isIndexing[article.id] ? "animate-pulse" : ""}`} />
+                          </Button>
+                        </div>
                       )}
                       <Link to={`/admin/editar-artigo/${article.id}`}>
                         <Button variant="ghost" size="icon" className="h-8 w-8">

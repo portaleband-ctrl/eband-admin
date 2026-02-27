@@ -31,6 +31,7 @@ const AdminNewArticle = () => {
   const [keyword, setKeyword] = useState("");
   const [tagsInput, setTagsInput] = useState("");
   const [title, setTitle] = useState("");
+  const [slug, setSlug] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
   const [articleType, setArticleType] = useState("standard");
@@ -64,6 +65,7 @@ const AdminNewArticle = () => {
       if (article) {
         setIsEditing(true);
         setTitle(article.title);
+        setSlug(article.slug);
         setContent(article.content);
         setCategory(article.category);
         setArticleType(article.type);
@@ -98,6 +100,21 @@ const AdminNewArticle = () => {
     try {
       const generatedTitle = await generateArticleTitle(settings.openAiApiKey, keyword, settings.customTitlePrompt);
       setTitle(generatedTitle);
+
+      // Auto-generate slug from title
+      const autoSlug = generatedTitle
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .substring(0, 100)
+        .replace(/-+$/g, "");
+      setSlug(autoSlug);
+
       toast.success("Título gerado com sucesso! Você pode editá-lo abaixo.");
     } catch (error: any) {
       toast.error(`Erro ao gerar título: ${error.message}`);
@@ -235,7 +252,7 @@ const AdminNewArticle = () => {
       return;
     }
 
-    const normalizedSlug = title
+    const finalSlug = (slug || title)
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
       .toLowerCase()
@@ -243,7 +260,9 @@ const AdminNewArticle = () => {
       .replace(/[^\w\s-]/g, "")
       .replace(/\s+/g, "-")
       .replace(/-+/g, "-")
-      .replace(/^-+|-+$/g, "");
+      .replace(/^-+|-+$/g, "")
+      .substring(0, 100)
+      .replace(/-+$/g, "");
 
     const cleanText = content
       .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
@@ -267,7 +286,7 @@ const AdminNewArticle = () => {
     const newArticle = {
       id: id || "",
       title,
-      slug: normalizedSlug,
+      slug: finalSlug,
       excerpt: cleanText.substring(0, 160) + (cleanText.length > 160 ? "..." : ""),
       content,
       featuredImage,
@@ -462,13 +481,43 @@ const AdminNewArticle = () => {
                 <Input
                   id="title"
                   value={title}
-                  onChange={e => setTitle(e.target.value)}
+                  onChange={e => {
+                    setTitle(e.target.value);
+                    if (!isEditing) {
+                      const autoSlug = e.target.value
+                        .normalize("NFD")
+                        .replace(/[\u0300-\u036f]/g, "")
+                        .toLowerCase()
+                        .trim()
+                        .replace(/[^\w\s-]/g, "")
+                        .replace(/\s+/g, "-")
+                        .replace(/-+/g, "-")
+                        .replace(/^-+|-+$/g, "")
+                        .substring(0, 100)
+                        .replace(/-+$/g, "");
+                      setSlug(autoSlug);
+                    }
+                  }}
                   placeholder="O título final que aparecerá no blog..."
                   className="mt-1 font-bold"
                 />
                 <p className="text-xs text-muted-foreground mt-1">
                   A IA usará este título exato para gerar o conteúdo do artigo.
                 </p>
+              </div>
+
+              <div>
+                <Label htmlFor="slug" className="flex items-center gap-2">
+                  URL / Slug (Caminho da página)
+                  <span className="text-[10px] text-muted-foreground font-normal">(Máx 100 caracteres)</span>
+                </Label>
+                <Input
+                  id="slug"
+                  value={slug}
+                  onChange={e => setSlug(e.target.value.toLowerCase().replace(/\s+/g, "-"))}
+                  placeholder="ex: titulo-do-artigo"
+                  className="mt-1 font-mono text-xs bg-muted/30"
+                />
               </div>
             </div>
             <div>
@@ -801,6 +850,17 @@ const AdminNewArticle = () => {
             >
               <Save className="w-4 h-4 mr-2" /> Baixar HTML
             </Button>
+
+            {isEditing && (
+              <a
+                href={`${settings.siteUrl}/artigo/${slug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-4 py-2 border border-green-600 text-green-600 rounded-md hover:bg-green-50 transition-colors text-sm font-medium"
+              >
+                <Eye className="w-4 h-4 mr-2" /> Ver no Site
+              </a>
+            )}
 
             <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
               <DialogTrigger asChild>
