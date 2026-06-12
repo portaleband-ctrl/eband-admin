@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { mockCategories } from "@/data/mockData";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, ImagePlus, RefreshCw, Save, Eye, Send, Globe, Trash2, Calendar } from "lucide-react";
+import { Sparkles, ImagePlus, RefreshCw, Save, Eye, Send, Globe, Trash2, Calendar, Bold, Italic, Link2, Heading2, Heading3, Image as ImageIcon, Quote } from "lucide-react";
 import { toast } from "sonner";
 import { useSettings } from "@/hooks/useSettings";
 import { useArticles } from "@/hooks/useArticles";
@@ -58,6 +58,72 @@ const AdminNewArticle = () => {
   const [isKeywordModalOpen, setIsKeywordModalOpen] = useState(false);
   const [isAnalyzingKeywords, setIsAnalyzingKeywords] = useState(false);
   const [analyzedKeywords, setAnalyzedKeywords] = useState<any[]>([]);
+
+  // --- Link insertion state ---
+  const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
+  const [linkUrl, setLinkUrl] = useState("");
+  const [linkText, setLinkText] = useState("");
+  const [linkTarget, setLinkTarget] = useState("_blank");
+  const contentTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Insert HTML snippet at the textarea cursor position
+  const insertAtCursor = (before: string, after: string = "") => {
+    const textarea = contentTextareaRef.current;
+    if (!textarea) return;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selected = content.substring(start, end);
+    const newContent =
+      content.substring(0, start) +
+      before +
+      selected +
+      after +
+      content.substring(end);
+    setContent(newContent);
+    // Restore cursor after re-render
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(
+        start + before.length,
+        start + before.length + selected.length
+      );
+    }, 0);
+  };
+
+  const handleInsertLink = () => {
+    const textarea = contentTextareaRef.current;
+    const selectedText = textarea
+      ? content.substring(textarea.selectionStart, textarea.selectionEnd)
+      : "";
+    setLinkText(selectedText || "");
+    setLinkUrl("");
+    setLinkTarget("_blank");
+    setIsLinkDialogOpen(true);
+  };
+
+  const confirmInsertLink = () => {
+    if (!linkUrl) {
+      toast.error("Digite a URL do link.");
+      return;
+    }
+    const anchor = `<a href="${linkUrl}" target="${linkTarget}" rel="noopener noreferrer">${linkText || linkUrl}</a>`;
+    const textarea = contentTextareaRef.current;
+    if (!textarea) {
+      setContent((prev) => prev + anchor);
+    } else {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const newContent =
+        content.substring(0, start) + anchor + content.substring(end);
+      setContent(newContent);
+      setTimeout(() => {
+        textarea.focus();
+        textarea.setSelectionRange(start + anchor.length, start + anchor.length);
+      }, 0);
+    }
+    setIsLinkDialogOpen(false);
+    toast.success("Link inserido com sucesso!");
+  };
 
   useEffect(() => {
     if (id && articles.length > 0) {
@@ -719,15 +785,182 @@ const AdminNewArticle = () => {
           <TabsContent value="manual" className="space-y-4">
             <div>
               <Label htmlFor="content">Conteúdo (HTML)</Label>
+
+              {/* ── Toolbar ── */}
+              <div className="mt-1 flex flex-wrap gap-1 p-2 bg-muted/40 border border-b-0 rounded-t-md">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  title="Negrito"
+                  onClick={() => insertAtCursor("<strong>", "</strong>")}
+                  className="h-8 w-8 p-0"
+                >
+                  <Bold className="w-4 h-4" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  title="Itálico"
+                  onClick={() => insertAtCursor("<em>", "</em>")}
+                  className="h-8 w-8 p-0"
+                >
+                  <Italic className="w-4 h-4" />
+                </Button>
+                <div className="w-px bg-border mx-1" />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  title="Subtítulo H2"
+                  onClick={() => insertAtCursor("<h2>", "</h2>")}
+                  className="h-8 px-2 text-xs font-bold"
+                >
+                  H2
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  title="Subtítulo H3"
+                  onClick={() => insertAtCursor("<h3>", "</h3>")}
+                  className="h-8 px-2 text-xs font-bold"
+                >
+                  H3
+                </Button>
+                <div className="w-px bg-border mx-1" />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  title="Inserir Link / Backlink"
+                  onClick={handleInsertLink}
+                  className="h-8 px-2 gap-1 text-[#3483FA] hover:text-[#3483FA] hover:bg-[#3483FA]/10"
+                >
+                  <Link2 className="w-4 h-4" />
+                  <span className="text-xs font-semibold">Inserir Link</span>
+                </Button>
+                <div className="w-px bg-border mx-1" />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  title="Parágrafo"
+                  onClick={() => insertAtCursor("<p>", "</p>")}
+                  className="h-8 px-2 text-xs"
+                >
+                  &lt;p&gt;
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  title="Citação / Blockquote"
+                  onClick={() => insertAtCursor("<blockquote>", "</blockquote>")}
+                  className="h-8 w-8 p-0"
+                >
+                  <Quote className="w-4 h-4" />
+                </Button>
+              </div>
+
               <Textarea
+                ref={contentTextareaRef}
                 id="content"
                 value={content}
                 onChange={e => setContent(e.target.value)}
                 placeholder="Escreva o conteúdo do artigo em HTML..."
-                rows={16}
-                className="mt-1 font-mono text-sm"
+                rows={18}
+                className="mt-0 font-mono text-sm rounded-t-none border-t-0"
               />
             </div>
+
+            {/* ── Link Insert Dialog ── */}
+            <Dialog open={isLinkDialogOpen} onOpenChange={setIsLinkDialogOpen}>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Link2 className="w-5 h-5 text-[#3483FA]" />
+                    Inserir Link / Backlink
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 pt-2">
+                  <div>
+                    <Label htmlFor="linkUrl">URL de destino *</Label>
+                    <Input
+                      id="linkUrl"
+                      value={linkUrl}
+                      onChange={e => setLinkUrl(e.target.value)}
+                      placeholder="https://exemplo.com/pagina"
+                      className="mt-1"
+                      autoFocus
+                      onKeyDown={e => e.key === "Enter" && confirmInsertLink()}
+                    />
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      Cole aqui o link externo (backlink) ou interno que deseja inserir.
+                    </p>
+                  </div>
+                  <div>
+                    <Label htmlFor="linkText">Texto âncora (texto clicável)</Label>
+                    <Input
+                      id="linkText"
+                      value={linkText}
+                      onChange={e => setLinkText(e.target.value)}
+                      placeholder="Ex: saiba mais, clique aqui, Nome do Site..."
+                      className="mt-1"
+                    />
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      Dica de SEO: use palavras-chave relevantes como texto âncora.
+                    </p>
+                  </div>
+                  <div>
+                    <Label>Abrir em</Label>
+                    <div className="flex gap-3 mt-2">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="linkTarget"
+                          value="_blank"
+                          checked={linkTarget === "_blank"}
+                          onChange={() => setLinkTarget("_blank")}
+                        />
+                        <span className="text-sm">Nova aba (_blank) — recomendado para links externos</span>
+                      </label>
+                    </div>
+                    <div className="flex gap-3 mt-1">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="linkTarget"
+                          value="_self"
+                          checked={linkTarget === "_self"}
+                          onChange={() => setLinkTarget("_self")}
+                        />
+                        <span className="text-sm">Mesma aba (_self) — recomendado para links internos</span>
+                      </label>
+                    </div>
+                  </div>
+                  {linkUrl && (
+                    <div className="bg-muted/40 rounded-md p-3 border text-xs font-mono break-all">
+                      <span className="text-muted-foreground">Preview: </span>
+                      <span className="text-[#3483FA]">
+                        &lt;a href="{linkUrl}" target="{linkTarget}"&gt;{linkText || linkUrl}&lt;/a&gt;
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <DialogFooter className="pt-4">
+                  <Button variant="outline" onClick={() => setIsLinkDialogOpen(false)}>Cancelar</Button>
+                  <Button
+                    onClick={confirmInsertLink}
+                    className="bg-[#3483FA] hover:bg-[#2968C8] text-white"
+                  >
+                    <Link2 className="w-4 h-4 mr-2" />
+                    Inserir Link
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </TabsContent>
 
           {/* AI tab */}
